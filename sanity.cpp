@@ -153,4 +153,5 @@ int main()
 	testLinkedList(dmin, dmax);
 
 	testStack();
+	testQueue();
 }
