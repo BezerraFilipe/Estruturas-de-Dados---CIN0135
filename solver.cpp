@@ -1,35 +1,50 @@
+#include "exprtree.hpp"
 #include <iostream>
-#include <fstream>
-
-#include "cemetery.hpp" 
+#include <iomanip>
+#include <sstream>
 
 int main() {
-    int M, L;
-    cin >> M >> L;
-    Cemetery cemetery(M, L);
-    
-    string command;
-    while (cin >> command) {
-        if (command == "END") break;
-        
-        key_t key;
-        cin >> key;
-        
-        location_t result;
-        if (command == "ADD") {
-            result = cemetery.add(key);
-        } else if (command == "REM") {
-            result = cemetery.del(key);
-        } else if (command == "QRY") {
-            result = cemetery.qry(key);
+    int n;
+    std::cin >> n;
+    std::cin.ignore();
+
+    for (int i = 0; i < n; ++i) {
+        char mode;
+        std::cin.get(mode);
+        std::cin.ignore();
+
+        std::string expr;
+        std::getline(std::cin, expr);
+
+        deque<string> tokens = tokenize(expr);
+        Node *root = nullptr;
+        std::string convertedExpr;
+        std::optional<int> result;
+
+        if (mode == 'I') {
+            root = parseInfix(tokens);
+            getPostfixExpression(root, convertedExpr);
+            } else if (mode == 'P') {
+            root = parsePostfix(tokens);
+            getInfixExpression(root, convertedExpr);
+            
         }
+
         
-        if (result.floor == -1 && result.grave == -1) {
-            cout << "?.?" << endl;
+        int height = root->height();
+        result = root->eval();
+
+        if (result.has_value()) {
+            std::cout << convertedExpr << std::endl;
+            std::cout << height << " " << result.value() << std::endl;
         } else {
-            cout << result.floor << "." << result.grave << endl;
+            std::cout << convertedExpr << std::endl;
+            std::cout << height << " ?" << std::endl;
         }
+       
+
+        delete root;
     }
-    
+
     return 0;
 }
